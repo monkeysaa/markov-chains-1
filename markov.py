@@ -10,9 +10,10 @@ def open_and_read_file(file_path):
     the file's contents as one string of text.
     """
 
-    # your code goes here
+    with open(file_path, 'r') as f:
+        file_string = f.read()
 
-    return 'Contents of your file as one long string'
+    return file_string
 
 
 def make_chains(text_string):
@@ -42,17 +43,38 @@ def make_chains(text_string):
 
     chains = {}
 
-    # your code goes here
-
+    words = text_string.split()
+    
+    counter = 0
+    for word in words[2:-1]:
+        tup = (words[counter], words[counter + 1])
+        if tup in chains:
+            chains[tup].append(word)
+        else:
+            chains[tup] = [word]
+        counter += 1
+    
+    # Add final key:value pair
+    tup = (words[counter], words[counter+1])
+    chains[tup] = [words[-1]]
+        
     return chains
 
 
 def make_text(chains):
     """Return text from chains."""
-
+    
     words = []
+    starter_tup = ('Would', 'you')
+    link = [starter_tup[0], starter_tup[1], choice(chains[starter_tup])]
+    words.extend(link)
+    key = (link[1], link[2])
 
-    # your code goes here
+    while key in chains:
+        next_word = choice(chains[key])
+        words.append(next_word)
+        link = [key[0], key[1], next_word]
+        key = (link[1], link[2])
 
     return ' '.join(words)
 
