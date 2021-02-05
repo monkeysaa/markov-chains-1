@@ -64,17 +64,13 @@ def make_chains(text_string):
 def make_text(chains):
     """Return text from chains."""
     
-    words = []
-    starter_tup = ('Would', 'you')
-    link = [starter_tup[0], starter_tup[1], choice(chains[starter_tup])]
-    words.extend(link)
-    key = (link[1], link[2])
+    link = choice(list(chains.keys()))
+    words = [link[0], link[1]]
 
-    while key in chains:
-        next_word = choice(chains[key])
+    while link in chains:
+        next_word = choice(chains[link])
         words.append(next_word)
-        link = [key[0], key[1], next_word]
-        key = (link[1], link[2])
+        link = (link[1], next_word)
 
     return ' '.join(words)
 
