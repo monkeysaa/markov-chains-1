@@ -61,6 +61,50 @@ def make_chains(text_string):
         
     return chains
 
+def make_tri_chains(text_string):
+    """Take input text as string; return dictionary of Markov chains.
+
+    A chain will be a key that consists of a tuple of (word1, word2, word3)
+    and the value would be a list of the word(s) that follow those two
+    words in the input text.
+
+    For example:
+
+        >>> chains = make_chains('hi there mary hi there juanita')
+
+    Each trigram (except the last) will be a key in chains.
+    Each item in chains is a list of all possible following words:
+
+        >>> chains[('hi', 'there,' 'mary')]
+        ['hi']
+
+        >>> chains[('hi', 'there','juanita')]
+        [None]
+    """
+
+    chains = {}
+
+    words = text_string.split()
+    
+    counter = 0
+    # for n-grams, [start = n:-1]
+    for word in words[3:-1]:
+        # for n-grams, this would need to be looped, with highest
+        # entry as words[counter + n-1]
+        tup = (words[counter], words[counter + 1], words[counter + 2]) 
+        if tup in chains:
+            chains[tup].append(word)
+        else:
+            chains[tup] = [word]
+        counter += 1
+    
+    # Must final tuple must be handled differently?
+    # edit tup for n-grams
+    tup = (words[counter], words[counter+1], words[counter+2])
+    chains[tup] = [words[-1]]
+        
+    return chains
+
 
 def make_text(chains):
     """Return text from chains."""
@@ -71,12 +115,14 @@ def make_text(chains):
             capital_keys.append(c)
 
     link = choice(capital_keys)
-    words = [link[0], link[1]]
+    # longer for n-gram
+    words = [link[0], link[1], link[2]]
 
     while link in chains:
         next_word = choice(chains[link])
         words.append(next_word)
-        link = (link[1], next_word)
+        # longer for n-gram
+        link = (link[1], link[2], next_word)
 
     return ' '.join(words)
 
@@ -87,7 +133,8 @@ input_path = sys.argv[1]
 input_text = open_and_read_file(input_path)
 
 # Get a Markov chain
-chains = make_chains(input_text)
+# for n-grams, use updated function
+chains = make_tri_chains(input_text)
 
 # Produce random text
 random_text = make_text(chains)
